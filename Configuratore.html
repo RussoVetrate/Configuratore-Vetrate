@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuratore Scorrevole - Russo Vetrate</title>
+    <style>
+        :root {
+            --primary: #6b5e52;
+            --secondary: #8a7c6f;
+            --background: #f4f1ed;
+            --text-dark: #333;
+            --accent-red: #c0392b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 20px;
+        }
+        .header img {
+            max-height: 120px;
+            margin-bottom: 15px;
+        }
+        .header h1 {
+            color: var(--primary);
+            margin: 0;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        
+        /* Tendina Opzioni Prezzi (Collapsible) */
+        .options-dropdown {
+            background: #e0dcd5;
+            border: 1px solid #c8c2b9;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .options-dropdown summary {
+            padding: 12px 20px;
+            font-weight: bold;
+            color: var(--primary);
+            cursor: pointer;
+            user-select: none;
+            outline: none;
+            font-size: 1.05em;
+        }
+        .options-dropdown .options-content {
+            padding: 20px;
+            background: #faf8f5;
+            border-top: 1px solid #c8c2b9;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        /* Pannello Principale Input */
+        .controls-panel {
+            background: #faf8f5;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0dcd5;
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9em;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        
+        /* Bottoni */
+        .btn-container {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        button.action-btn {
+            flex: 1;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+        button.action-btn:hover {
+            background-color: var(--secondary);
+        }
+        button.pdf-btn {
+            background-color: #27ae60;
+        }
+        button.pdf-btn:hover {
+            background-color: #2ecc71;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        /* Totale Generale Sticky/Bottom Panel */
+        .grand-total-panel {
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+
+        /* Lista Disegni */
+        #drawings-container {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+        .drawing-card {
+            position: relative;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            border: 1px solid #eaeaea;
+        }
+        
+        /* Info Misure */
+        .drawing-info {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            padding: 15px 60px 15px 15px; 
+            border-radius: 6px;
+            border-left: 5px solid var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Posizionamento X */
+        .delete-btn {
+            position: absolute;
+            top: 35px;
+            right: 25px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+        
+        .info-col {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .info-val {
+            font-size: 1.05em;
+            color: #2c3e50;
+        }
+        .info-val strong {
+            color: var(--accent-red);
+        }
+        
+        /* Pannello Economico Semplificato (Solo Totale Vetrata) */
+        .drawing-cost-panel {
+            margin-top: 15px;
+            background: #fff9f3;
+            border: 1px solid #f3e5d8;
+            padding: 15px 20px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .cost-label-simple {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cost-val-simple {
+            color: var(--accent-red);
+            font-size: 1.2em;
+        }
+        
+        .canvas-wrapper {
+            text-align: center;
+            overflow-x: auto;
+            background: #fff;
+            padding: 10px 0;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        canvas:hover {
+            transform: scale(1.005);
+        }
+
+        /* Stili per la Stampa / PDF nativo */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .controls-panel, .options-dropdown, .delete-btn, .btn-container {
+                display: none !important;
+            }
+            .drawing-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+                margin-bottom: 40px;
+            }
+            canvas {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .grand-total-panel {
+                background: #6b5e52 !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="LOGO.png" alt="Russo Vetrate" onerror="this.style.display='none';">
+        <h1>Configuratore Scorrevole - Russo Vetrate</h1>
+    </div>
+    
+    <details class="options-dropdown" open>
+        <summary>⚙️ Listino Prezzi e Parametri Economici</summary>
+        <div class="options-content">
+            <div class="input-group">
+                <label for="p_glass">Prezzo Vetro a Mq (€/m²):</label>
+                <input type="number" id="p_glass" value="55" min="0" step="0.5" oninput="recalculateCosts()">
+            </div>
+            <div class="input-group">
+                <label for="p_alu">Prezzo Alluminio al metro lineare (€/m):</label>
+                <input type="number" id="p_alu" value="0" min="0" step="0.5" oninput="recalculateCosts()">
+            </div>
+            <div class="input-group">
+                <label for="p_panel">Prezzo Lavorazione ogni Anta (€/cad):</label>
+                <input type="number" id="p_panel" value="170" min="0" step="0.5" oninput="recalculateCosts()">
+            </div>
+            <div class="input-group">
+                <label for="p_handle">Prezzo Maniglie/Serrature (€/cad):</label>
+                <input type="number" id="p_handle" value="20" min="0" step="0.5" oninput="recalculateCosts()">
+            </div>
+        </div>
+    </details>
+    
+    <div class="controls-panel">
+        <div class="grid">
+            <div class="input-group">
+                <label for="width">Larghezza Vano (L) [mm]:</label>
+                <input type="number" id="width" value="18000" min="500">
+            </div>
+            <div class="input-group">
+                <label for="height">Altezza Vano (H) [mm]:</label>
+                <input type="number" id="height" value="2200" min="500">
+            </div>
+            <div class="input-group">
+                <label for="panels">Numero Totale Ante (N):</label>
+                <input type="number" id="panels" value="12" min="2">
+            </div>
+            <div class="input-group">
+                <label for="openingType">Tipo di Apertura:</label>
+                <select id="openingType">
+                    <option value="laterale" selected>Scorrimento Laterale (DX/SX)</option>
+                    <option value="contrapposta">Scorrimento Contrapposto (Centrale)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="profileType">Tipo di Profilo Inferiore:</label>
+                <select id="profileType">
+                    <option value="standard">Standard / Becco d'Oca</option>
+                    <option value="incassato">Incassato a Pavimento</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="color">Colore Struttura:</label>
+                <input type="text" id="color" value="Antracite">
+            </div>
+            
+            <div class="btn-container">
+                <button class="action-btn" onclick="addNewDrawing()">Sviluppo Misure</button>
+                <button class="action-btn pdf-btn" onclick="window.print()">Esporta Tutto in PDF</button>
+            </div>
+        </div>
+        <small id="panel-warning" class="error" style="display:none; text-align:center; margin-top:10px;">Per l'apertura contrapposta N deve essere pari e &ge; 4.</small>
+    </div>
+
+    <div class="grand-total-panel">
+        <span>TOTALE GENERALE PREVENTIVO:</span>
+        <span id="grand-total-value">€ 0.00</span>
+    </div>
+
+    <div id="drawings-container"></div>
+</div>
+
+<script>
+    let drawingsList = [];
+    let drawingIdCounter = 0;
+
+    function addNewDrawing() {
+        const L = parseFloat(document.getElementById('width').value);
+        const H = parseFloat(document.getElementById('height').value);
+        const N = parseInt(document.getElementById('panels').value);
+        const openingType = document.getElementById('openingType').value;
+        const profileType = document.getElementById('profileType').value;
+        const color = document.getElementById('color').value;
+        const warning = document.getElementById('panel-warning');
+        
+        warning.style.display = 'none';
+
+        if (isNaN(L) || isNaN(H) || isNaN(N) || N < 2) {
+            alert("Inserire valori numerici validi.");
+            return;
+        }
+
+        if (openingType === 'contrapposta' && (N % 2 !== 0 || N < 4)) {
+            warning.style.display = 'block';
+            return;
+        }
+
+        let Lv1, Lv2, Hv;
+
+        if (openingType === 'laterale') {
+            Lv2 = (L - 232) / N + 13;
+            Lv1 = Lv2 + 90;
+        } else {
+            Lv2 = (L - 427) / N + 13;
+            Lv1 = Lv2 + 90;
+        }
+
+        let profileDeduction = (profileType === 'standard') ? 104 : 84;
+        Hv = H - profileDeduction;
+
+        // Calcolo e blocco dei costi al momento della creazione del disegno
+        const priceGlassMq = parseFloat(document.getElementById('p_glass').value) || 0;
+        const priceAluMl = parseFloat(document.getElementById('p_alu').value) || 0;
+        const pricePanelFixed = parseFloat(document.getElementById('p_panel').value) || 0;
+        const priceHandleEach = parseFloat(document.getElementById('p_handle').value) || 0;
+
+        const totalGlassAreaSqM = ((2 * Lv1 * Hv) + ((N - 2) * Lv2 * Hv)) / 1000000;
+        
+        const costGlass = totalGlassAreaSqM * priceGlassMq;
+        const costAluminum = (L / 1000) * priceAluMl;
+        const costPanelsProcessing = N * pricePanelFixed;
+        
+        const numHandles = 2; 
+        const costHandles = numHandles * priceHandleEach;
+        
+        const totalVetrataCost = costGlass + costAluminum + costPanelsProcessing + costHandles;
+
+        drawingIdCounter++;
+        
+        const drawingData = {
+            id: drawingIdCounter,
+            L: L,
+            H: H,
+            N: N,
+            opType: openingType,
+            profType: profileType,
+            Lv1: Lv1,
+            Lv2: Lv2,
+            Hv: Hv,
+            profileDeduction: profileDeduction,
+            color: color,
+            totalCost: totalVetrataCost
+        };
+
+        drawingsList.unshift(drawingData);
+        
+        renderAllDrawings();
+    }
+
+    function removeDrawing(id) {
+        drawingsList = drawingsList.filter(d => d.id !== id);
+        renderAllDrawings();
+    }
+
+    function renderAllDrawings() {
+        const container = document.getElementById('drawings-container');
+        container.innerHTML = '';
+        
+        let grandTotal = 0;
+
+        drawingsList.forEach(d => {
+            grandTotal += d.totalCost;
+
+            const card = document.createElement('div');
+            card.className = 'drawing-card';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '&times;';
+            deleteBtn.onclick = () => removeDrawing(d.id);
+            card.appendChild(deleteBtn);
+
+            const opName = d.opType === 'laterale' ? 'Laterale DX/SX' : 'Contrapposta (Centrale)';
+            const profName = d.profType === 'standard' ? 'Standard' : 'Incassato';
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'drawing-info';
+            infoDiv.innerHTML = `
+                <div class="info-col">
+                    <span class="info-val"><strong>Vano L x H:</strong> ${d.L} x ${d.H} mm</span>
+                    <span class="info-val" style="font-size:0.9em; color:#555;">${d.N} Ante totali | Apertura: ${opName} | Profilo: ${profName} | Colore: ${d.color}</span>
+                </div>
+                <div class="info-col" style="text-align: right;">
+                    <span class="info-val">Anta Standard (Lv2): <strong>${d.Lv2.toFixed(1)} mm</strong></span>
+                    <span class="info-val">Anta Esterna (Lv1): <strong>${d.Lv1.toFixed(1)} mm</strong></span>
+                    <span class="info-val">Altezza Vetro (Hv): <strong>${d.Hv.toFixed(1)} mm</strong></span>
+                </div>
+            `;
+            card.appendChild(infoDiv);
+
+            const canvasWrapper = document.createElement('div');
+            canvasWrapper.className = 'canvas-wrapper';
+            const canvas = document.createElement('canvas');
+            canvas.width = 1000;
+            canvas.height = 420;
+            canvas.title = "Clicca per lo Schermo Intero";
+            canvas.onclick = () => {
+                if (canvas.requestFullscreen) canvas.requestFullscreen();
+                else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+            };
+            canvasWrapper.appendChild(canvas);
+            card.appendChild(canvasWrapper);
+
+            const costPanel = document.createElement('div');
+            costPanel.className = 'drawing-cost-panel';
+            costPanel.innerHTML = `
+                <span class="cost-label-simple">Costo Totale Vetrata:</span>
+                <span class="cost-val-simple">€ ${d.totalCost.toFixed(2)}</span>
+            `;
+            card.appendChild(costPanel);
+
+            container.appendChild(card);
+
+            try {
+                drawVepaGraphics(canvas, d.L, d.H, d.N, d.Lv1, d.Lv2, d.Hv, d.profileDeduction, d.opType);
+            } catch (e) {
+                console.error("Errore nel disegno sul canvas: ", e);
+            }
+        });
+
+        document.getElementById('grand-total-value').innerText = `€ ${grandTotal.toFixed(2)}`;
+    }
+
+    function recalculateCosts() {
+        renderAllDrawings();
+    }
+
+    function drawArrow(ctx, fromx, fromy, tox, toy) {
+        var headlen = 8; 
+        var dx = tox - fromx;
+        var dy = toy - fromy;
+        var angle = Math.atan2(dy, dx);
+        ctx.beginPath();
+        ctx.moveTo(fromx, fromy);
+        ctx.lineTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.moveTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.stroke();
+    }
+
+    function drawVepaGraphics(canvas, L, H, N, Lv1, Lv2, Hv, profileDeduction, type) {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const marginX = 80;
+        const marginY = 60;
+        const drawWidth = canvas.width - marginX * 2;
+        const drawHeight = canvas.height - marginY * 2;
+
+        const scaleX = drawWidth / L;
+        const scaleY = drawHeight / H;
+        const scale = Math.min(scaleX, scaleY);
+
+        const scaledL = L * scale;
+        const scaledH = H * scale;
+        
+        const trackScaleH = (profileDeduction / 2) * scale;
+        const glassScaleH = Hv * scale;
+
+        const offsetX = (canvas.width - scaledL) / 2;
+        const offsetY = (canvas.height - scaledH) / 2;
+        const groundY = offsetY + scaledH;
+
+        ctx.save();
+        let skyGradient = ctx.createLinearGradient(0, offsetY, 0, offsetY + scaledH * 0.6);
+        skyGradient.addColorStop(0, '#e8f4f8');
+        skyGradient.addColorStop(1, '#ffffff');
+        ctx.fillStyle = skyGradient;
+        ctx.fillRect(offsetX, offsetY, scaledL, scaledH * 0.6);
+        
+        let groundGradient = ctx.createLinearGradient(0, groundY - scaledH * 0.4, 0, groundY);
+        groundGradient.addColorStop(0, '#f4f1ed');
+        groundGradient.addColorStop(1, '#e5dfd8');
+        ctx.fillStyle = groundGradient;
+        ctx.fillRect(offsetX, groundY - scaledH * 0.4, scaledL, scaledH * 0.4);
+        ctx.restore();
+
+        ctx.fillStyle = '#6b5e52'; 
+        ctx.fillRect(offsetX - 8, offsetY - 8, scaledL + 16, 8); 
+        ctx.fillRect(offsetX - 8, groundY, scaledL + 16, 8); 
+
+        let metalGradient = ctx.createLinearGradient(0, offsetY, 0, offsetY + trackScaleH);
+        metalGradient.addColorStop(0, '#bdc3c7');
+        metalGradient.addColorStop(0.5, '#ecf0f1');
+        metalGradient.addColorStop(1, '#95a5a6');
+        ctx.fillStyle = metalGradient;
+        ctx.fillRect(offsetX, offsetY, scaledL, trackScaleH);
+        ctx.strokeRect(offsetX, offsetY, scaledL, trackScaleH);
+
+        let metalGradientBot = ctx.createLinearGradient(0, groundY - trackScaleH, 0, groundY);
+        metalGradientBot.addColorStop(0, '#95a5a6');
+        metalGradientBot.addColorStop(0.5, '#ecf0f1');
+        metalGradientBot.addColorStop(1, '#bdc3c7');
+        ctx.fillStyle = metalGradientBot;
+        ctx.fillRect(offsetX, groundY - trackScaleH, scaledL, trackScaleH);
+        ctx.strokeRect(offsetX, groundY - trackScaleH, scaledL, trackScaleH);
+
+        let panels = [];
+        if (type === 'laterale') {
+            let total_panel_width = 2 * Lv1 + (N - 2) * Lv2;
+            let overlap = (total_panel_width - L) / (N - 1);
+            let currentX = 0;
+            for (let i = 0; i < N; i++) {
+                let pType = (i === 0 || i === N - 1) ? 'A' : 'B';
+                let pWidth = (pType === 'A') ? Lv1 : Lv2;
+                panels.push({ x: currentX, w: pWidth, label: pType });
+                currentX += (pWidth - overlap);
+            }
+        } else {
+            let half_N = N / 2;
+            let half_L = L / 2;
+            let half_panel_width = 2 * Lv1 + (half_N - 2) * Lv2;
+            let overlap = (half_panel_width - half_L) / (half_N - 1);
+            
+            let currentX = 0;
+            for (let i = 0; i < half_N; i++) {
+                let pType = (i === 0 || i === half_N - 1) ? 'A' : 'B';
+                let pWidth = (pType === 'A') ? Lv1 : Lv2;
+                panels.push({ x: currentX, w: pWidth, label: pType });
+                currentX += (pWidth - overlap);
+            }
+            currentX = half_L;
+            for (let i = 0; i < half_N; i++) {
+                let pType = (i === 0) ? 'A1' : (i === half_N - 1) ? 'A' : 'B';
+                let pWidth = (pType === 'A1' || pType === 'A') ? Lv1 : Lv2;
+                panels.push({ x: currentX, w: pWidth, label: pType });
+                currentX += (pWidth - overlap);
+            }
+        }
+
+        for (let i = 0; i < panels.length; i++) {
+            let p = panels[i];
+            let sx = offsetX + (p.x * scale);
+            let sy = offsetY + trackScaleH;
+            let sw = p.w * scale;
+            let sh = glassScaleH;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(sx, sy, sw, sh);
+            ctx.clip();
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.fillRect(sx, sy, sw, sh);
+            
+            ctx.beginPath();
+            ctx.moveTo(sx - sw, sy);
+            ctx.lineTo(sx + sw * 2, sy + sh);
+            ctx.lineTo(sx + sw * 2, sy + sh + 40);
+            ctx.lineTo(sx - sw, sy + 40);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+            ctx.fill();
+            
+            ctx.strokeStyle = '#8a7c6f'; 
+            ctx.lineWidth = 1.2;
+            ctx.strokeRect(sx, sy, sw, sh);
+            ctx.restore();
+
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 13px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(p.label, sx + sw / 2, sy + sh / 2 - 8);
+            
+            ctx.font = '9px Arial';
+            let widthText = `${p.w.toFixed(0)} mm`;
+            ctx.fillText(widthText, sx + sw / 2, sy + sh / 2 + 10);
+            
+            if (p.label === 'A' || p.label === 'A1') {
+                ctx.fillStyle = '#6b5e52';
+                if (type === 'contrapposta') {
+                    let handleX = sx + sw / 2;
+                    let handleY = groundY - (1000 * scale);
+                    ctx.beginPath();
+                    ctx.arc(handleX, handleY, 4.5 * scale, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                } else {
+                    let handleX = (p.label === 'A1' || i < panels.length / 2) ? sx + 8 : sx + sw - 12;
+                    let handleY = sy + sh / 2 - 20;
+                    ctx.fillRect(handleX, handleY, 3.5, 40);
+                }
+            }
+        }
+
+        ctx.strokeStyle = '#333';
+        ctx.fillStyle = '#333';
+        ctx.lineWidth = 1.2;
+        
+        let dimY_top = offsetY - 25;
+        drawArrow(ctx, offsetX + 10, dimY_top, offsetX, dimY_top);
+        drawArrow(ctx, offsetX + scaledL - 10, dimY_top, offsetX + scaledL, dimY_top);
+        ctx.beginPath(); ctx.moveTo(offsetX, dimY_top); ctx.lineTo(offsetX + scaledL, dimY_top); ctx.stroke();
+        ctx.font = 'bold 13px Arial';
+        ctx.fillText(`L: ${L} mm`, offsetX + scaledL / 2, dimY_top - 8);
+
+        let dimX_left = offsetX - 35;
+        drawArrow(ctx, dimX_left, groundY - scaledH + 10, dimX_left, groundY - scaledH);
+        drawArrow(ctx, dimX_left, groundY - 10, dimX_left, groundY);
+        ctx.beginPath(); ctx.moveTo(dimX_left, groundY - scaledH); ctx.lineTo(dimX_left, groundY); ctx.stroke();
+        ctx.save();
+        ctx.translate(dimX_left - 10, groundY - scaledH / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(`H: ${H} mm`, 0, 0);
+        ctx.restore();
+
+        let dimX_right = offsetX + scaledL + 35;
+        ctx.strokeStyle = '#c0392b';
+        ctx.fillStyle = '#c0392b';
+        let glassStartY = offsetY + trackScaleH;
+        let glassEndY = groundY - trackScaleH;
+        drawArrow(ctx, dimX_right, glassStartY + 10, dimX_right, glassStartY);
+        drawArrow(ctx, dimX_right, glassEndY - 10, dimX_right, glassEndY);
+        ctx.beginPath(); ctx.moveTo(dimX_right, glassStartY); ctx.lineTo(dimX_right, glassEndY); ctx.stroke();
+        ctx.save();
+        ctx.translate(dimX_right + 18, glassStartY + glassScaleH / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(`Hv: ${Hv.toFixed(1)} mm`, 0, 0);
+        ctx.restore();
+
+        if (type === 'contrapposta') {
+            ctx.beginPath();
+            ctx.setLineDash([6, 5]);
+            ctx.moveTo(offsetX + scaledL / 2, offsetY - 8);
+            ctx.lineTo(offsetX + scaledL / 2, groundY + 8);
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+    }
+
+    window.onload = addNewDrawing;
+</script>
+</body>
+</html>
